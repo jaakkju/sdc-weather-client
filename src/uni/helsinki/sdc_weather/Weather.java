@@ -1,17 +1,24 @@
 package uni.helsinki.sdc_weather;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 
 public class Weather extends Activity {
+	private static final String TAG = "Weather";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+        
+     	Intent intent = new Intent(this, WeatherService.class);
+    	startService(intent);
+    	
+    	Log.i(TAG, "testi");
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

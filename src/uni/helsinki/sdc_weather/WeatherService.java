@@ -7,8 +7,8 @@ import android.util.Log;
 public class WeatherService extends IntentService  {
 	private static final String TAG = "WeatherService";
 
-	public WeatherService(String name) {
-		super(name);
+	public WeatherService() {
+		super("WeatherService");
 	}
 
 	@Override

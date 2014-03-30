@@ -9,8 +9,41 @@
     tools:context=".Weather" >
 
     <TextView
+        android:id="@+id/textView_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/ButtonGet"
+        android:text="TextView: Waiting for result" />
+
+    <Button
+        android:id="@+id/ButtonGet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_result"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="77dp"
+        android:layout_marginTop="23dp"
+        android:text="Get" />
+
+    <Button
+        android:id="@+id/ButtonPost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/ButtonGet"
+        android:layout_alignBottom="@+id/ButtonGet"
+        android:layout_toRightOf="@+id/ButtonGet"
+        android:text="Post" />
+
+    <Button
+        android:id="@+id/ButtonMeasure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/ButtonPost"
+        android:layout_alignBottom="@+id/ButtonPost"
+        android:layout_toRightOf="@+id/ButtonPost"
+        android:text="Measure" />
 
 </RelativeLayout>

@@ -37,7 +37,7 @@ import com.sensorcon.sensordrone.android.Drone;
 public class Weather extends Activity {
 	private static final String TAG = "SDC-Weather";
 	private static final String URL =  "http://sdc-weather.herokuapp.com/measurement";
-	private static final String MAC = "XX:XX:XX:XX:XX:XX";
+	private static final String MAC[] = {"00:17:EC:11:C0:0F", "00:17:EC:11:C0:0F"};
 	
 	private static final String SAMPLE_JSON = "{ \"latitude\": 60.123, \"longitude\": 24.456, \"timestamp\": \"2014-03-21T12:34:56Z\", \"temperatureCelsius\": -5.0, \"pressureAtmospheres\": 1.0, \"humidity\": 69.96 }";
 	
@@ -52,7 +52,7 @@ public class Weather extends Activity {
 		setContentView(R.layout.activity_weather);
 		
 		// Connecting to Drone and enabling sensors 
-		enableDrone(MAC);
+		enableDrone(MAC[0]);
 
 		buttonGet = (Button) findViewById(R.id.ButtonGet);
 		buttonGet.setOnClickListener(new View.OnClickListener() {

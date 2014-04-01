@@ -8,7 +8,7 @@ public class WeatherService extends IntentService  {
 	private static final String TAG = "WeatherService";
 
 	public WeatherService() {
-		super("WeatherService");
+		super(TAG);
 	}
 
 	@Override

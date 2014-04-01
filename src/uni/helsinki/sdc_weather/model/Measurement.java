@@ -103,5 +103,13 @@ public class Measurement {
 			return false;
 		return true;
 	}
+	@Override
+	public String toString() {
+		return "Measurement [timestamp=" + timestamp + ", longitude="
+				+ longitude + ", latitude=" + latitude
+				+ ", temperatureCelsius=" + temperatureCelsius
+				+ ", pressureAtmospheres=" + pressureAtmospheres
+				+ ", humidity=" + humidity + "]";
+	}
 	
 }

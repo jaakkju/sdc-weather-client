@@ -84,6 +84,9 @@ public class Weather extends Activity {
 				if (loc != null) {
 					m.setLatitude(loc.getLatitude());
 					m.setLongitude(loc.getLongitude());
+				} else {
+					m.setLatitude(60.60);
+					m.setLongitude(24.24);
 				}
 				m.setPressureAtmospheres(0.99);
 				m.setTemperatureCelsius(37.0);
@@ -96,7 +99,15 @@ public class Weather extends Activity {
 		buttonMeasure = (Button) findViewById(R.id.ButtonMeasure);
 		buttonMeasure.setOnClickListener(new View.OnClickListener() {
 		    public void onClick(View v) {
-		    	new DoMeasure().execute();
+		    	new DoMeasure() {
+		    		@Override
+		    		protected void onPostExecute(Measurement result) {
+		    			// TODO Auto-generated method stub
+		    			super.onPostExecute(result);
+		    			
+		    			new DoPost().execute(result);
+		    		}
+		    	}.execute();
 		    }
 		});		
 	}
@@ -136,6 +147,9 @@ public class Weather extends Activity {
 			m.setPressureAtmospheres(drone.pressure_Atmospheres);
 			m.setTemperatureCelsius(drone.temperature_Celsius);
 			
+			m.setTimestamp(new Date());
+			m.setLatitude(60.60);
+			m.setLongitude(24.24);
 			return m;
 		}
 	}

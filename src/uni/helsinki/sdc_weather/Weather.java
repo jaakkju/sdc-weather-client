@@ -19,6 +19,7 @@ import uni.helsinki.sdc_weather.model.Measurement;
 import uni.helsinki.sdc_weather.model.MeasurementDataService;
 import android.app.Activity;
 import android.content.Context;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
@@ -76,18 +77,37 @@ public class Weather extends Activity {
 		    	
 		    	LocationManager lm = (LocationManager)thisContext.getSystemService(Context.LOCATION_SERVICE);
 		    	
-		    	Location loc = lm.getLastKnownLocation(LOCATION_SERVICE);
 		    	
+		    	Criteria crit = new Criteria();
+		    	crit.setAccuracy(Criteria.NO_REQUIREMENT);
+		    	crit.setCostAllowed(true);
+		    	crit.setPowerRequirement(Criteria.NO_REQUIREMENT);
+		    	crit.setAltitudeRequired(false);
+		    	crit.setBearingRequired(false);
+		    	crit.setSpeedRequired(false);
+
+		    	String provider = lm.getBestProvider(new Criteria(), false);
+		    	Log.i(TAG, "getBestProvider = " + provider);
+		    	
+		    	Location loc = null;
+
 				// Using HTTP Post with sample data					
 				Measurement m = new Measurement();
 				m.setTimestamp(new Date());
-				if (loc != null) {
-					m.setLatitude(loc.getLatitude());
-					m.setLongitude(loc.getLongitude());
-				} else {
+		    	
+		    	if (provider != null && (loc = lm.getLastKnownLocation(provider)) != null) {
+					if (loc != null) {
+						Log.i(TAG, "location = " + loc.toString());
+						
+						m.setLatitude(loc.getLatitude());
+						m.setLongitude(loc.getLongitude());
+					}
+		    	} else {
+					Log.i(TAG, "sending dummy location");
+					
 					m.setLatitude(60.60);
 					m.setLongitude(24.24);
-				}
+		    	}
 				m.setPressureAtmospheres(0.99);
 				m.setTemperatureCelsius(37.0);
 				m.setHumidity(42.42);

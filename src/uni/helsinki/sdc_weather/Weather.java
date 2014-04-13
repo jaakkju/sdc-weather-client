@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -12,30 +13,35 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import uni.helsinki.sdc_weather.model.Measurement;
 import uni.helsinki.sdc_weather.model.MeasurementDataService;
-import android.app.Activity;
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.method.DateTimeKeyListener;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.sensorcon.sensordrone.Humidity_V1;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.sensorcon.sensordrone.android.Drone;
 
-public class Weather extends Activity {
+public class Weather extends FragmentActivity {
 	private static final String TAG = "SDC-Weather";
 	private static final String URL =  "http://sdc-weather.herokuapp.com/measurement";
 	private static final String MAC[] = {"00:17:EC:11:C0:0F", "00:17:EC:11:C0:0F"};
@@ -46,6 +52,11 @@ public class Weather extends Activity {
 	Button buttonPost;
 	Button buttonMeasure;
 	Drone drone;
+	
+    private HeatmapTileProvider mProvider;
+    private TileOverlay mOverlay;
+    
+    private GoogleMap mMap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +65,8 @@ public class Weather extends Activity {
 		
 		// Connecting to Drone and enabling sensors 
 		enableDrone(MAC[0]);
-
+		
+		
 		buttonGet = (Button) findViewById(R.id.ButtonGet);
 		buttonGet.setOnClickListener(new View.OnClickListener() {
 		    public void onClick(View v) {
@@ -130,6 +142,14 @@ public class Weather extends Activity {
 		    	}.execute();
 		    }
 		});		
+		
+	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+
+        addHeatMap();
 	}
 	
 	private void enableDrone(String mac) {
@@ -255,4 +275,64 @@ public class Weather extends Activity {
 	    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
 	    return s.hasNext() ? s.next() : "";
 	}
+	
+    private void addHeatMap() {
+        List<LatLng> list = null;
+
+        // Get the data: latitude/longitude positions of police stations.
+        try {
+            list = readItems(R.raw.police_stations);
+        } catch (JSONException e) {
+            Toast.makeText(this, "Problem reading list of locations.", Toast.LENGTH_LONG).show();
+        }
+
+        // Create a heat map tile provider, passing it the latlngs of the police stations.
+        mProvider = new HeatmapTileProvider.Builder()
+            .data(list)
+            .build();
+        setupMap();
+        // Add a tile overlay to the map, using the heat map tile provider.
+        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+    }
+    
+    /**
+     * Get a GoogleMap if needed
+     */
+    private void setupMap() {
+    	if (mMap != null) {
+            return;
+        }
+    	SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.heatmap);
+    	
+        mMap = fragment.getMap();
+    }
+    
+    /**
+     * Read items from a file containing a JSON array.
+     * @param rawResource
+     * @return
+     * @throws JSONException
+     */
+    private List<LatLng> readItems(int rawResource) throws JSONException {
+    	Scanner scanner = new Scanner(getResources().openRawResource(rawResource));
+    	String contents = "";
+		try {
+			while (scanner.hasNextLine()) {
+				contents += scanner.nextLine();
+			}
+		} finally {
+			scanner.close();
+		}
+		
+		ArrayList<LatLng> list = new ArrayList<LatLng>();
+		
+		JSONArray jArray = new JSONArray(contents);
+		int len = jArray.length();
+		for(int i = 0; i < len; ++i) {
+			JSONObject jo = jArray.getJSONObject(i);
+			list.add(new LatLng(jo.getDouble("lat"), jo.getDouble("lng")));
+		}
+		
+    	return list;
+    }
 }

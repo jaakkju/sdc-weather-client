@@ -20,6 +20,12 @@ import android.widget.TextView;
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    final String[] fragments ={
+            "uni.helsinki.sdc_weather.HeatMapFragment",
+            "uni.helsinki.sdc_weather.MeasurementFragment",
+            };
+	
+	
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -50,7 +56,7 @@ public class MainActivity extends Activity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, Fragment.instantiate(MainActivity.this, fragments[position]))
                 .commit();
     }
 
@@ -61,9 +67,6 @@ public class MainActivity extends Activity
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
                 break;
         }
     }

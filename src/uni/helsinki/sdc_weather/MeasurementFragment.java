@@ -32,7 +32,8 @@ public class MeasurementFragment extends Fragment {
 		buttonMeasure = (Button)root.findViewById(R.id.measureButton);
 		buttonMeasure.setOnClickListener(measureHandler);
 		
-		buttonPost = (Button)root.findViewById(R.id.postButton);
+		
+		//buttonPost = (Button)root.findViewById(R.id.postButton);
 		
 		return root;
 	}

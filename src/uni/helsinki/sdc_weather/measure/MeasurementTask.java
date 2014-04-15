@@ -1,9 +1,19 @@
 package uni.helsinki.sdc_weather.measure;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
 
 import uni.helsinki.sdc_weather.R;
 import uni.helsinki.sdc_weather.model.Measurement;
+import uni.helsinki.sdc_weather.model.MeasurementDataService;
 
 import com.sensorcon.sensordrone.android.Drone;
 
@@ -19,6 +29,7 @@ import android.widget.TextView;
 
 public class MeasurementTask extends AsyncTask<Drone, Void, Measurement> {
 	private static final String TAG = "SDC-Weather";
+	private static final String URL =  "http://sdc-weather.herokuapp.com/measurement";
 
 	Context context;
 	LocationManager lm;
@@ -28,6 +39,39 @@ public class MeasurementTask extends AsyncTask<Drone, Void, Measurement> {
 	public MeasurementTask(Context context, ViewGroup root) {
 		this.context = context;
 		this.root = root;
+	}
+	
+	private void postMeasurement(Measurement measurement) {
+		try {
+			MeasurementDataService mds = new MeasurementDataService();
+			DefaultHttpClient httpclient = new DefaultHttpClient();
+			
+	    	HttpPost httpPostRequest = new HttpPost(URL);
+	
+			StringEntity se = new StringEntity(mds.toJson(measurement));
+	
+			// Set HTTP parameters
+			httpPostRequest.setEntity(se);
+			
+			// It might be that we don't need this - httpPostRequest.setHeader("Accept", "application/json");
+			httpPostRequest.setHeader("Content-type", "application/json");
+	
+			// Handles what is returned from the page and get data
+			HttpResponse response = (HttpResponse) httpclient.execute(httpPostRequest);
+			Log.i(TAG, response.getStatusLine().toString());
+			
+			if (response.getStatusLine().hashCode() != 200) {
+				Log.w(TAG, "HTTP Post - returned HTTP Code " + response.getStatusLine().getStatusCode());
+			}
+		} catch (UnsupportedEncodingException e) {
+			Log.e(TAG, e.getClass().getName() + ": " + e.getMessage(), e);
+		} catch (JSONException e) {
+			Log.e(TAG, e.getClass().getName() + ": " + e.getMessage(), e);
+		} catch (ClientProtocolException e) {
+			Log.e(TAG, e.getClass().getName() + ": " + e.getMessage(), e);
+		} catch (IOException e) {
+			Log.e(TAG, e.getClass().getName() + ": " + e.getMessage(), e);
+		}
 	}
 	
 	@Override
@@ -79,6 +123,8 @@ public class MeasurementTask extends AsyncTask<Drone, Void, Measurement> {
 			m.setLatitude(60.60);
 			m.setLongitude(24.24);
     	}
+    	
+    	postMeasurement(m);
 		
 		return m;
 	}
